@@ -1,85 +1,120 @@
 ---
 name: md2pdf-converter
-description: [TODO: Complete and informative explanation of what the skill does and when to use it. Include WHEN to use this skill - specific scenarios, file types, or tasks that trigger it.]
+description: Offline Markdown to PDF converter with full Unicode support using Pandoc + WeasyPrint + local emoji cache. Converts Markdown documents to professional PDFs with Chinese fonts and colorful emojis. Use when user needs to: (1) Convert Markdown reports/documents to PDF, (2) Generate PDFs with emoji support, (3) Create PDFs with proper Chinese character rendering, (4) Work offline after initial setup, or any PDF generation task from Markdown.
 ---
 
-# Md2pdf Converter
+# Markdown to PDF Converter
 
 ## Overview
 
-[TODO: 1-2 sentences explaining what this skill enables]
+Convert Markdown documents to professional PDFs with full Unicode support, Chinese fonts, and colorful emojis. Uses Pandoc + WeasyPrint with a local emoji cache to work offline after the first run.
 
-## Structuring This Skill
+## Quick Start
 
-[TODO: Choose the structure that best fits this skill's purpose. Common patterns:
+Convert a Markdown file to PDF:
 
-**1. Workflow-Based** (best for sequential processes)
-- Works well when there are clear step-by-step procedures
-- Example: DOCX skill with "Workflow Decision Tree" → "Reading" → "Creating" → "Editing"
-- Structure: ## Overview → ## Workflow Decision Tree → ## Step 1 → ## Step 2...
+```bash
+bash scripts/md2pdf-local.sh input.md output.pdf
+```
 
-**2. Task-Based** (best for tool collections)
-- Works well when the skill offers different operations/capabilities
-- Example: PDF skill with "Quick Start" → "Merge PDFs" → "Split PDFs" → "Extract Text"
-- Structure: ## Overview → ## Quick Start → ## Task Category 1 → ## Task Category 2...
+**First run only:** Downloads ~68MB emoji resources from npmmirror.com (China-friendly mirror). Subsequent runs work offline.
 
-**3. Reference/Guidelines** (best for standards or specifications)
-- Works well for brand guidelines, coding standards, or requirements
-- Example: Brand styling with "Brand Guidelines" → "Colors" → "Typography" → "Features"
-- Structure: ## Overview → ## Guidelines → ## Specifications → ## Usage...
+**Example:**
 
-**4. Capabilities-Based** (best for integrated systems)
-- Works well when the skill provides multiple interrelated features
-- Example: Product Management with "Core Capabilities" → numbered capability list
-- Structure: ## Overview → ## Core Capabilities → ### 1. Feature → ### 2. Feature...
+```bash
+bash scripts/md2pdf-local.sh report.md report.pdf
+```
 
-Patterns can be mixed and matched as needed. Most skills combine patterns (e.g., start with task-based, add workflow for complex operations).
+## Features
 
-Delete this entire "Structuring This Skill" section when done - it's just guidance.]
+- ✅ Full Unicode support (Chinese, Japanese, Korean)
+- ✅ Colorful emoji rendering (Google style, 64px)
+- ✅ Offline operation after initial setup
+- ✅ China-friendly mirror (npmmirror.com)
+- ✅ Professional PDF layout with page numbers
+- ✅ Code highlighting, tables, blockquotes
+- ✅ Automatic emoji detection and conversion
 
-## [TODO: Replace with the first main section based on chosen structure]
+## Technical Details
 
-[TODO: Add content here. See examples in existing skills:
-- Code samples for technical skills
-- Decision trees for complex workflows
-- Concrete examples with realistic user requests
-- References to scripts/templates/references as needed]
+### Dependencies
+
+- **Pandoc** - Universal document converter
+- **WeasyPrint** - CSS-to-PDF renderer
+- **wget** - For emoji download (first run only)
+
+### How It Works
+
+1. **First run**: Downloads emoji-datasource-google (15.0.0) to `~/.cache/md2pdf/emojis/`
+2. **Pandoc** converts Markdown to HTML with a Lua filter that replaces emoji characters with local image references
+3. **WeasyPrint** renders the HTML to PDF using:
+   - AR PL UMing CN for Chinese characters
+   - Local emoji images (PNG, 64px)
+   - Professional CSS styling
+
+### Emoji Cache Location
+
+```
+~/.cache/md2pdf/emojis/
+└── 1f600.png, 1f601.png, ... (all emoji PNGs)
+```
+
+### Fonts
+
+**Primary Chinese font**: AR PL UMing CN
+
+**Fallback**: Noto Sans SC, Noto Sans CJK SC, Microsoft YaHei
+
+**Monospace**: Menlo, Monaco
+
+## Limitations
+
+- Only supports emojis present in emoji-datasource-google 15.0.0 (~3600 emojis)
+- Missing emojis display as Unicode fallback characters
+- First run requires internet connection (for emoji download)
+
+## Troubleshooting
+
+### Font Issues
+
+If Chinese characters display incorrectly, ensure AR PL UMing CN is installed:
+
+```bash
+# Ubuntu/Debian
+sudo apt-get install fonts-arphic-uming
+
+# Check if installed
+fc-list | grep "AR PL UMing"
+```
+
+### Emoji Not Showing
+
+- Check if emoji cache exists: `ls ~/.cache/md2pdf/emojis/`
+- If missing, delete cache and re-run: `rm -rf ~/.cache/md2pdf`
+- Verify emoji file exists: `ls ~/.cache/md2pdf/emojis/1f600.png`
+
+### WeasyPrint Errors
+
+Install missing dependencies:
+
+```bash
+# Ubuntu/Debian
+sudo apt-get install python3-weasyprint
+
+# Or via pip
+pip3 install weasyprint
+```
 
 ## Resources
 
-This skill includes example resource directories that demonstrate how to organize different types of bundled resources:
-
 ### scripts/
-Executable code (Python/Bash/etc.) that can be run directly to perform specific operations.
 
-**Examples from other skills:**
-- PDF skill: `fill_fillable_fields.py`, `extract_form_field_info.py` - utilities for PDF manipulation
-- DOCX skill: `document.py`, `utilities.py` - Python modules for document processing
+**md2pdf-local.sh** - Main conversion script with automatic emoji caching
 
-**Appropriate for:** Python scripts, shell scripts, or any executable code that performs automation, data processing, or specific operations.
+**Usage**: Direct execution, no need to load into context unless debugging or modifying.
 
-**Note:** Scripts may be executed without loading into context, but can still be read by Claude for patching or environment adjustments.
-
-### references/
-Documentation and reference material intended to be loaded into context to inform Claude's process and thinking.
-
-**Examples from other skills:**
-- Product management: `communication.md`, `context_building.md` - detailed workflow guides
-- BigQuery: API reference documentation and query examples
-- Finance: Schema documentation, company policies
-
-**Appropriate for:** In-depth documentation, API references, database schemas, comprehensive guides, or any detailed information that Claude should reference while working.
-
-### assets/
-Files not intended to be loaded into context, but rather used within the output Claude produces.
-
-**Examples from other skills:**
-- Brand styling: PowerPoint template files (.pptx), logo files
-- Frontend builder: HTML/React boilerplate project directories
-- Typography: Font files (.ttf, .woff2)
-
-**Appropriate for:** Templates, boilerplate code, document templates, images, icons, fonts, or any files meant to be copied or used in the final output.
-
----
-
-**Any unneeded directories can be deleted.** Not every skill requires all three types of resources.
+**Key Features**:
+- Automatic emoji download and caching
+- Lua filter for emoji replacement
+- CSS styling for professional output
+- Temporary file cleanup (automatic)
