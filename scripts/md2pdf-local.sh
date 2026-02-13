@@ -60,10 +60,25 @@ ensure_emojis() {
 
 ensure_emojis
 
-# --- 2. 生成 Lua Filter (指向本地文件) ---
+# --- 2. 生成可用 Emoji 列表 ---
+# 创建一个包含所有可用 emoji hex 码的文件
+find "$EMOJI_DIR" -type f -name "*.png" -exec basename {} .png \; | sort > "$TEMP_DIR/available_emojis.txt"
+
+# --- 3. 生成 Lua Filter (指向本地文件，检查文件存在性) ---
 # 这里我们需要将 Shell 变量传递给 Lua，或者直接在 Lua 中硬编码路径
 # 为了安全，我们通过 sed 替换路径
 cat << 'EOF' > "$LUA_FILTER.tpl"
+-- 读取可用 emoji 列表
+local available_emojis_file = io.open("AVAILABLE_EMOJIS_FILE", "r")
+local available_emojis = {}
+
+if available_emojis_file then
+    for line in available_emojis_file:lines() do
+        available_emojis[line] = true
+    end
+    available_emojis_file:close()
+end
+
 function Str(el)
   local new_inlines = {}
   local text = el.text
@@ -86,15 +101,18 @@ function Str(el)
       -- emoji-datasource 文件名为小写 hex (例如 1f600.png)
       local hex = string.format("%x", c)
 
-      -- 构建本地 file:// 路径
-      -- 注意：WeasyPrint 需要绝对路径
-      local url = "file://" .. emoji_path .. "/" .. hex .. ".png"
+      -- 检查 emoji 是否在可用列表中
+      if available_emojis[hex] then
+          -- 构建本地 file:// 路径
+          -- 注意：WeasyPrint 需要绝对路径
+          local url = "file://" .. emoji_path .. "/" .. hex .. ".png"
 
-      -- 检查文件是否存在（可选，为了性能通常不检查，直接生成链接）
-      -- 这里为了防止缺字显示红叉，Pandoc 不做 IO 检查，交给 WeasyPrint 处理
-
-      local img_html = '<img src="' .. url .. '" class="emoji" alt="' .. utf8.char(c) .. '">'
-      table.insert(new_inlines, pandoc.RawInline('html', img_html))
+          local img_html = '<img src="' .. url .. '" class="emoji" alt="' .. utf8.char(c) .. '">'
+          table.insert(new_inlines, pandoc.RawInline('html', img_html))
+      else
+          -- Emoji 不存在，显示为 Unicode 字符
+          table.insert(new_inlines, pandoc.Str(utf8.char(c)))
+      end
     else
       table.insert(new_inlines, pandoc.Str(utf8.char(c)))
     end
@@ -109,9 +127,11 @@ end
 EOF
 
 # 替换 Lua 模板中的路径占位符
-sed "s|EMOJI_DIR_PLACEHOLDER|$EMOJI_DIR|g" "$LUA_FILTER.tpl" > "$LUA_FILTER"
+sed -e "s|EMOJI_DIR_PLACEHOLDER|$EMOJI_DIR|g" \
+    -e "s|AVAILABLE_EMOJIS_FILE|$TEMP_DIR/available_emojis.txt|g" \
+    "$LUA_FILTER.tpl" > "$LUA_FILTER"
 
-# --- 3. 生成 CSS 样式 ---
+# --- 4. 生成 CSS 样式 ---
 cat << 'EOF' > "$CSS_STYLE"
 @page {
     size: A4;
@@ -154,7 +174,7 @@ th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
 th { background-color: #f8f9fa; }
 EOF
 
-# --- 4. 执行转换 ---
+# --- 5. 执行转换 ---
 
 echo "📝 正在处理 Markdown (使用本地 Emoji)..."
 pandoc "$INPUT_FILE" \
