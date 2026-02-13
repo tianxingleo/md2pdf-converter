@@ -1,6 +1,6 @@
 ---
 name: md2pdf-converter
-description: Offline Markdown to PDF converter with full Unicode support using Pandoc + WeasyPrint + local emoji cache. Converts Markdown documents to professional PDFs with Chinese fonts and colorful emojis. Use when user needs to: (1) Convert Markdown reports/documents to PDF, (2) Generate PDFs with emoji support, (3) Create PDFs with proper Chinese character rendering, (4) Work offline after initial setup, or any PDF generation task from Markdown.
+description: Offline Markdown to PDF converter with full Unicode support using Pandoc + WeasyPrint + local emoji cache. Converts Markdown documents to professional PDFs with Chinese fonts and colorful emojis. Use when user needs to convert Markdown reports or documents to PDF, generate PDFs with emoji support, create PDFs with proper Chinese character rendering, or work offline after initial setup.
 ---
 
 # Markdown to PDF Converter
@@ -27,13 +27,13 @@ bash scripts/md2pdf-local.sh report.md report.pdf
 
 ## Features
 
-- ✅ Full Unicode support (Chinese, Japanese, Korean)
-- ✅ Colorful emoji rendering (Google style, 64px)
-- ✅ Offline operation after initial setup
-- ✅ China-friendly mirror (npmmirror.com)
-- ✅ Professional PDF layout with page numbers
-- ✅ Code highlighting, tables, blockquotes
-- ✅ Automatic emoji detection and conversion
+- Full Unicode support (Chinese, Japanese, Korean)
+- Colorful emoji rendering (Google style, 64px)
+- Offline operation after initial setup
+- China-friendly mirror (npmmirror.com)
+- Professional PDF layout with page numbers
+- Code highlighting, tables, blockquotes
+- Automatic emoji detection and conversion
 
 ## Technical Details
 
