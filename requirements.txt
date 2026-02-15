@@ -1,0 +1,5 @@
+# Python Dependencies
+python3>=3.6
+
+# Optional (for testing)
+# pytest>=7.0.0

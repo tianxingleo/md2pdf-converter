@@ -1,0 +1,18 @@
+# ClawHub ignore patterns
+# 避免将缓存和临时文件包含在发布的 skill 包中
+
+# 缓存目录
+.cache/
+
+# 临时文件
+*.tmp
+*.temp
+*.swp
+*~
+
+# macOS
+.DS_Store
+
+# Git（如果 skill 在 Git 仓库中）
+.git/
+.gitignore

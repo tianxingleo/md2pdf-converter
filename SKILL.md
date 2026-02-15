@@ -203,3 +203,43 @@ bash /path/to/skills/md2pdf-converter/scripts/md2pdf-local.sh input.md output.pd
 - Missing emojis (newer than Twemoji 14.0.0) will display as Unicode characters
 - First run requires internet connection (for Twemoji download)
 - Emoji cache size: ~150MB (3660 PNG files at 72x72px)
+
+## Quick Start with Examples
+
+After installation, try the examples:
+
+```bash
+cd /path/to/skills/md2pdf-converter
+
+# 1. Quick start script (recommended)
+bash examples/quick-start.sh
+
+# 2. Convert simple example
+bash scripts/md2pdf-local.sh examples/simple.md simple-output.pdf
+
+# 3. Convert Chinese example
+bash scripts/md2pdf-local.sh examples/chinese.md chinese-output.pdf
+
+# 4. Test emoji support
+bash scripts/md2pdf-local.sh examples/emoji.md emoji-test.pdf
+```
+
+## File Structure
+
+```
+md2pdf-converter/
+├── SKILL.md                    # This file (skill documentation)
+├── README.md                   # Comprehensive project documentation
+├── requirements.txt             # Python dependencies
+├── .clawignore                # Exclude cache files from package
+├── scripts/
+│   ├── md2pdf-local.sh        # Main conversion script
+│   └── generate_emoji_mapping.py  # Emoji mapping generator
+└── examples/                   # Example files and scripts
+    ├── simple.md              # Simple Markdown example
+    ├── chinese.md             # Chinese character test
+    ├── emoji.md               # Emoji test file
+    └── quick-start.sh         # Quick start helper script
+```
+
+See `README.md` for detailed documentation and usage examples.
